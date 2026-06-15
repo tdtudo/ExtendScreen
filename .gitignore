@@ -1,4 +1,4 @@
-# Android
+# === Android ===
 ExtendScreenAndroid/.gradle/
 ExtendScreenAndroid/app/build/
 ExtendScreenAndroid/build/
@@ -6,24 +6,41 @@ ExtendScreenAndroid/local.properties
 ExtendScreenAndroid/adb.exe
 ExtendScreenAndroid/debug.keystore
 ExtendScreenAndroid/app/release/
+*.apk
+*.ap_
+*.dex
+*.class
 
-# .NET
+# === .NET ===
 **/bin/
 **/obj/
+*.pdb
 
-# Output (build artifacts)
+# === 构建产物 ===
 output/
 
-# Icon generator tool (temporary)
+# === 临时工具 ===
 IconGen/
 IconGenerator.csx
 
-# IDE
+# === 签名密钥（不要上传） ===
+*.jks
+*.keystore
+
+# === IDE ===
 .idea/
 .vs/
+.vscode/
 *.user
 *.suo
+*.sln
+*.csproj.user
 
-# OS
+# === OS ===
 Thumbs.db
 .DS_Store
+Desktop.ini
+
+# === 其他 ===
+*.log
+*.tmp
