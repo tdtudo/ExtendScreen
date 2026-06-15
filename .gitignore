@@ -1,0 +1,28 @@
+# Android
+ExtendScreenAndroid/.gradle/
+ExtendScreenAndroid/app/build/
+ExtendScreenAndroid/build/
+ExtendScreenAndroid/local.properties
+ExtendScreenAndroid/adb.exe
+ExtendScreenAndroid/debug.keystore
+
+# .NET
+**/bin/
+**/obj/
+
+# Output (build artifacts)
+output/
+
+# Icon generator tool (temporary)
+IconGen/
+IconGenerator.csx
+
+# IDE
+.idea/
+.vs/
+*.user
+*.suo
+
+# OS
+Thumbs.db
+.DS_Store

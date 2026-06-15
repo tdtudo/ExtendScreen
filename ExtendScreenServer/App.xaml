@@ -1,0 +1,14 @@
+<Application x:Class="ExtendScreenServer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ExtendScreenServer"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+        <Style TargetType="Window" x:Key="ModernWindow">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="Background" Value="#F3F3F3"/>
+            <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>
+        </Style>
+    </Application.Resources>
+</Application>

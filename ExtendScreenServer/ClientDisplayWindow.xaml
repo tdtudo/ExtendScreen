@@ -1,0 +1,29 @@
+<Window x:Class="ExtendScreenServer.ClientDisplayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ExtendScreen - 扩展屏幕" Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#000000"
+        ResizeMode="CanResize">
+
+    <Grid>
+        <Image x:Name="VideoImage" Stretch="Fill"
+               MouseDown="VideoImage_MouseDown"
+               MouseUp="VideoImage_MouseUp"
+               MouseMove="VideoImage_MouseMove"
+               MouseWheel="VideoImage_MouseWheel"/>
+
+        <!-- 顶部悬浮状态栏 -->
+        <Border Background="#80000000" Height="32" VerticalAlignment="Top"
+                CornerRadius="0,0,4,4" Padding="10,0">
+            <Grid>
+                <TextBlock x:Name="StatusText" Text="已连接" Foreground="#a6e3a1"
+                           VerticalAlignment="Center" FontSize="12"/>
+                <Button x:Name="DisconnectBtn" Content="断开" Height="22" Width="60"
+                        Background="#f38ba8" Foreground="#1e1e2e" BorderThickness="0" FontSize="11"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="DisconnectBtn_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

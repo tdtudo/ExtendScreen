@@ -1,0 +1,234 @@
+<Window x:Class="ExtendScreenServer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ExtendScreen" Height="480" Width="340"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize"
+        Style="{StaticResource ModernWindow}">
+
+    <Grid>
+        <!-- 模式选择页面 -->
+        <StackPanel x:Name="ModeSelectView" Margin="16" Visibility="Visible">
+            <TextBlock Text="ExtendScreen" FontSize="18" FontWeight="Bold"
+                       Foreground="#1A1A1A" Margin="0,0,0,10"/>
+
+            <TextBlock Text="选择连接方式" FontSize="14" Foreground="#666"
+                       HorizontalAlignment="Center" Margin="0,20,0,20"/>
+
+            <Button Content="Wi-Fi 连接" Height="48" FontSize="16" FontWeight="Medium"
+                    Background="#1565C0" Foreground="White" BorderThickness="0"
+                    Click="WifiMode_Click" Margin="0,0,0,16"
+                    Cursor="Hand"/>
+
+            <TextBlock Text="手机和电脑需在同一局域网，手机端自动发现电脑"
+                       FontSize="11" Foreground="#999" TextWrapping="Wrap"
+                       HorizontalAlignment="Center" Margin="0,0,0,24"/>
+
+            <Button Content="ADB 连接" Height="48" FontSize="16" FontWeight="Medium"
+                    Background="#2E7D32" Foreground="White" BorderThickness="0"
+                    Click="UsbMode_Click" Margin="0,0,0,16"
+                    Cursor="Hand"/>
+
+            <TextBlock Text="通过 ADB 端口转发连接，支持 USB 线或无线调试"
+                       FontSize="11" Foreground="#999" TextWrapping="Wrap"
+                       HorizontalAlignment="Center" Margin="0,0,0,24"/>
+
+            <Button Content="连接其他电脑" Height="48" FontSize="16" FontWeight="Medium"
+                    Background="#6A1B9A" Foreground="White" BorderThickness="0"
+                    Click="ClientMode_Click" Margin="0,0,0,16"
+                    Cursor="Hand"/>
+
+            <TextBlock Text="将本电脑作为扩展屏幕，连接到另一台运行 ExtendScreen 的电脑"
+                       FontSize="11" Foreground="#999" TextWrapping="Wrap"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Text="ExtendScreen v1.0 — 即开即用的屏幕扩展工具"
+                       FontSize="10" Foreground="#BBB" HorizontalAlignment="Center"
+                       Margin="0,40,0,0"/>
+        </StackPanel>
+
+        <!-- 工作页面（Wi-Fi / USB 服务端模式） -->
+        <ScrollViewer x:Name="WorkView" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled" Visibility="Collapsed">
+            <StackPanel Margin="16">
+                <!-- 标题 + 返回 -->
+                <DockPanel Margin="0,0,0,10">
+                    <Button Content="← 返回" FontSize="12" Background="Transparent"
+                            BorderThickness="0" Foreground="#1565C0" Cursor="Hand"
+                            Click="BackToModeSelect_Click" DockPanel.Dock="Left"
+                            VerticalAlignment="Center"/>
+                    <TextBlock Text="ExtendScreen" FontSize="18" FontWeight="Bold"
+                               Foreground="#1A1A1A" HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </DockPanel>
+
+                <!-- 当前模式 -->
+                <Border Background="#E3F2FD" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                    <StackPanel>
+                        <TextBlock Text="{Binding ModeLabelText}" FontSize="12" Foreground="#1565C0"/>
+                        <TextBlock Text="{Binding ModeDescription}" FontSize="11" Foreground="#666"
+                                   TextWrapping="Wrap" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 本机 IP（仅 Wi-Fi 模式显示） -->
+                <Border Background="#FFF3E0" CornerRadius="6" Padding="12" Margin="0,0,0,8"
+                        Visibility="{Binding IsWifiMode, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <TextBlock Text="本机IP（手机端输入此IP）" FontSize="12" Foreground="#E65100"/>
+                        <TextBlock Text="{Binding LocalIpAddress}" FontSize="18" FontWeight="Bold"
+                                   Foreground="#BF360C" FontFamily="Consolas" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 连接状态 -->
+                <Border Background="White" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                    <StackPanel>
+                        <TextBlock Text="连接状态" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                        <DockPanel>
+                            <Ellipse Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,6,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="#CCC"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                <Setter Property="Fill" Value="#4CAF50"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Text="{Binding StatusText}" FontSize="13" TextWrapping="Wrap"/>
+                        </DockPanel>
+                        <TextBlock Text="{Binding DisplayModeText}" FontSize="11" Foreground="#FF9800"
+                                   Margin="0,2,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 设备信息 -->
+                <Border Background="White" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                    <StackPanel>
+                        <TextBlock Text="设备信息" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="设备名称:" FontSize="12" Foreground="#999"/>
+                            <TextBlock Text="{Binding ConnectedDevice.DeviceName, TargetNullValue=---}"
+                                       FontSize="12" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="连接方式:" FontSize="12" Foreground="#999"/>
+                            <TextBlock Text="{Binding ConnectionType}" FontSize="12" Grid.Column="1"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 分辨率 + 帧率 横排 -->
+                <Border Background="White" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="分辨率" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding ResolutionOptions}"
+                                      SelectedIndex="{Binding SelectedResolutionIndex}"
+                                      Height="28" FontSize="12"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="帧率" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding FpsOptions}"
+                                      SelectedIndex="{Binding SelectedFpsIndex}"
+                                      Height="28" FontSize="12"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 断开按钮 -->
+                <Button Content="断开此设备"
+                        Height="32" FontSize="13"
+                        Background="#E53935" Foreground="White"
+                        BorderThickness="0"
+                        IsEnabled="{Binding IsConnected}"
+                        Click="DisconnectButton_Click"
+                        Margin="0,0,0,8"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 客户端页面（连接其他电脑） -->
+        <ScrollViewer x:Name="ClientView" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled" Visibility="Collapsed">
+            <StackPanel Margin="16">
+                <!-- 标题 + 返回 -->
+                <DockPanel Margin="0,0,0,10">
+                    <Button Content="← 返回" FontSize="12" Background="Transparent"
+                            BorderThickness="0" Foreground="#6A1B9A" Cursor="Hand"
+                            Click="BackToModeSelect_Click" DockPanel.Dock="Left"
+                            VerticalAlignment="Center"/>
+                    <TextBlock Text="连接其他电脑" FontSize="18" FontWeight="Bold"
+                               Foreground="#1A1A1A" HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </DockPanel>
+
+                <!-- 说明 -->
+                <Border Background="#F3E5F5" CornerRadius="6" Padding="12" Margin="0,0,0,12">
+                    <TextBlock Text="将本电脑作为另一台电脑的扩展屏幕。请在另一台电脑上运行 ExtendScreen 并选择 Wi-Fi 或 ADB 模式。"
+                               FontSize="12" Foreground="#4A148C" TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- 服务端 IP -->
+                <TextBlock Text="服务端 IP 地址" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                <TextBox x:Name="ServerIpBox" Text="192.168." FontSize="16" Height="36"
+                         Background="White" Foreground="#1A1A1A" BorderBrush="#DDD"
+                         Padding="8,0,0,0" VerticalContentAlignment="Center" Margin="0,0,0,12"/>
+
+                <!-- 视频端口 -->
+                <TextBlock Text="视频端口" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                <TextBox x:Name="ClientVideoPortBox" Text="12348" FontSize="16" Height="36"
+                         Background="White" Foreground="#1A1A1A" BorderBrush="#DDD"
+                         Padding="8,0,0,0" VerticalContentAlignment="Center" Margin="0,0,0,12"/>
+
+                <!-- 输入端口 -->
+                <TextBlock Text="输入端口" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                <TextBox x:Name="ClientInputPortBox" Text="12347" FontSize="16" Height="36"
+                         Background="White" Foreground="#1A1A1A" BorderBrush="#DDD"
+                         Padding="8,0,0,0" VerticalContentAlignment="Center" Margin="0,0,0,16"/>
+
+                <!-- 连接按钮 -->
+                <Button x:Name="ClientConnectBtn" Content="连接" Height="42" FontSize="16" FontWeight="Bold"
+                        Background="#6A1B9A" Foreground="White" BorderThickness="0"
+                        Click="ClientConnect_Click" Cursor="Hand" Margin="0,0,0,12"/>
+
+                <!-- 客户端状态 -->
+                <Border x:Name="ClientStatusBorder" Background="White" CornerRadius="6" Padding="12" Margin="0,0,0,8"
+                        Visibility="Collapsed">
+                    <StackPanel>
+                        <TextBlock Text="连接状态" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                        <DockPanel>
+                            <Ellipse x:Name="ClientStatusDot" Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,6,0"
+                                     Fill="#CCC"/>
+                            <TextBlock x:Name="ClientStatusText" Text="未连接" FontSize="13"/>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 断开按钮 -->
+                <Button x:Name="ClientDisconnectBtn" Content="断开连接"
+                        Height="32" FontSize="13"
+                        Background="#E53935" Foreground="White" BorderThickness="0"
+                        Click="ClientDisconnect_Click" Cursor="Hand"
+                        Visibility="Collapsed" Margin="0,0,0,8"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 客户端视频显示窗口（独立 Window，通过代码打开） -->
+    </Grid>
+</Window>
