@@ -5,6 +5,7 @@ ExtendScreenAndroid/build/
 ExtendScreenAndroid/local.properties
 ExtendScreenAndroid/adb.exe
 ExtendScreenAndroid/debug.keystore
+ExtendScreenAndroid/app/release/
 
 # .NET
 **/bin/
