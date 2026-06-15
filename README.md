@@ -21,8 +21,7 @@
 
 ```
 ExtendScreenAndroid/    # Android 端 - 接收视频流并显示
-ExtendScreenServer/     # Windows 服务端 - 捕获屏幕并传输
-ExtendScreenClient/     # Windows 客户端 - 作为扩展屏幕的 Windows 端
+ExtendScreenServer/     # Windows 端 - 捕获屏幕并传输，同时支持作为客户端连接其他服务端
 ```
 
 ### 原理
